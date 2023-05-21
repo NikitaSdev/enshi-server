@@ -20,7 +20,18 @@ export class HomeService {
       throw new BadRequestException("Уже существует коллекция главной страницы")
     }
     const home = new this.HomeModel({
-      main: { id: "428", photo: "dummyPhoto", description: "dummyDescription" },
+      main: {
+        list: [
+          {
+            id: "428",
+            photo: "dummyPhoto",
+            description: "dummyDescription",
+            link: "dummyLink",
+            rating: 5,
+            season: 1
+          }
+        ]
+      },
       popular: ["7433", "6826", "9217", "8659"],
       announced: [
         {
@@ -62,6 +73,7 @@ export class HomeService {
     home.main = dto.main
     home.popular = dto.popular
     home.announced = dto.announced
+    home.trending = dto.trending
     home.ratings = dto.ratings
     home.recommended = dto.recommended
     await home.save()

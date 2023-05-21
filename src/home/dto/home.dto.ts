@@ -1,10 +1,11 @@
 export class HomeDto {
   password: string
-  main: Array<IMain>
+  main: IMain
   popular: Array<string>
-  announced: Array<IAnnounce>
+  announced: { list: IAnnounce }
   ratings: Array<string>
   recommended: Array<string>
+  trending: Array<string>
 }
 interface IAnnounce {
   title: string
@@ -12,8 +13,15 @@ interface IAnnounce {
   type: "Фильм" | "Сериал"
   genres: Array<string>
 }
-interface IMain {
+
+interface IMainItem {
   id: string
   photo: string
+  rating: number
+  season: number
   description: string
+  link: string
+}
+interface IMain {
+  list: Array<IMainItem>
 }

@@ -6,18 +6,31 @@ interface IAnnounce {
   type: "Фильм" | "Сериал"
   genres: Array<string>
 }
-interface IMain {
+interface IMainItem {
   id: string
   photo: string
+  rating: number
+  season: number
   description: string
+  link: string
 }
+interface IMain {
+  list: Array<IMainItem>
+}
+
 export class HomeModel {
-  @prop({ default: [{ id: "428", photo: "", description: "" }] })
-  main: Array<IMain>
+  @prop({
+    default: [
+      { id: "428", photo: "", description: "", link: "", season: 1, rating: 5 }
+    ]
+  })
+  main: IMain
   @prop({ default: [] })
   popular: Array<string>
   @prop({ default: [] })
-  announced: Array<IAnnounce>
+  announced: { list: IAnnounce }
+  @prop({ default: [""] })
+  trending: Array<string>
   @prop({ default: [] })
   ratings: Array<string>
   @prop({ default: [] })
