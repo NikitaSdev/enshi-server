@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module"
 import { UserModule } from "./user/user.module"
 import { FileModule } from "./file/file.module"
 import { HomeModule } from "./home/home.module"
+import { TopModule } from "./top/top.module"
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { HomeModule } from "./home/home.module"
     AuthModule,
     UserModule,
     HomeModule,
+    TopModule,
     FileModule
   ],
   controllers: [AppController],
