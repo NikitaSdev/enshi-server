@@ -18,7 +18,7 @@ export class TopService {
     }
     const findHome = await this.TopModel.findOne()
     if (findHome) {
-      throw new BadRequestException("Уже существует коллекция главной страницы")
+      throw new BadRequestException("Уже существует коллекция страницы топа")
     }
     const home = new this.TopModel({
       list: [""]
@@ -34,7 +34,7 @@ export class TopService {
     const top = await this.TopModel.findOne()
     if (!top) {
       throw new BadRequestException(
-        "Нечего изменять, сначала создай коллекцию главной страницы"
+        "Нечего изменять, сначала создай коллекцию страницы топа"
       )
     }
     top.list = dto.list
