@@ -8,6 +8,8 @@ export class UserModel extends TimeStamps {
   @prop({ unique: true })
   login: string
   @prop()
+  pseudonim: string
+  @prop()
   email: string
   @prop()
   emailOrLogin?: string
@@ -18,7 +20,9 @@ export class UserModel extends TimeStamps {
   @prop()
   activationLink: string
   @prop({ default: [] })
-  favourites?: Array<string>
+  count: Array<string>
+  @prop({ default: [] })
+  favourites: Array<string>
   @prop({ default: "/uploads/avatars/default.jpg" })
   avatarURL: string
   @prop({ default: "/uploads/wrappers/default.png" })

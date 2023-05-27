@@ -5,16 +5,15 @@ import {
   Get,
   HttpCode,
   Param,
-  Put,
-  UsePipes,
-  ValidationPipe
+  Post,
+  Put
 } from "@nestjs/common"
 import { UserService } from "./user.service"
 import { User } from "./decorators/user.decorator"
-import { UpdateUserDto } from "./dto/updateUser.dto"
+
 import { IdValidationPipe } from "../pipes/id.validation.pipe"
 import { Types } from "mongoose"
-import { UserModel } from "./user.model"
+import { UpdateDto } from "../auth/dto/auth.dto"
 
 @Controller("users")
 export class UserController {
@@ -23,20 +22,11 @@ export class UserController {
   async getProfile(@User("_id") _id: string) {
     return this.userService.byId(_id)
   }
-  @UsePipes(new ValidationPipe())
+
   @Put("profile")
   @HttpCode(200)
-  async updateProfile(@User("_id") _id: string, @Body() dto: UpdateUserDto) {
-    return this.userService.updateProfile(_id, dto)
-  }
-  @UsePipes(new ValidationPipe())
-  @Put(":id")
-  @HttpCode(200)
-  async updateUser(
-    @Param("id", IdValidationPipe) id: string,
-    @Body() dto: UpdateUserDto
-  ) {
-    return this.userService.updateProfile(id, dto)
+  async updateUser(@Body() dto: UpdateDto) {
+    return this.userService.updateProfile(dto)
   }
 
   @Delete(":id")
@@ -49,16 +39,27 @@ export class UserController {
   async getUser(@Param("id", IdValidationPipe) id: string) {
     return this.userService.byId(id)
   }
-  @Get("profile/favourites")
-  async getFavourites(@User("_id") _id: Types.ObjectId) {
+  @Post("profile/favourites")
+  async getFavourites(@Body("_id") _id: string) {
     return this.userService.getFavouriteMovies(_id)
+  }
+  @Get("count")
+  async getCount(@Body("refreshToken") refreshToken: string) {
+    return this.userService.getCount(refreshToken)
+  }
+  @Post("count")
+  async postCount(
+    @Body("refreshToken") refreshToken: string,
+    @Body("movieId") movieId: string
+  ) {
+    return this.userService.count(movieId, refreshToken)
   }
   @Put("profile/favourites")
   @HttpCode(200)
   async toggleFavourites(
-    @Body("movieId", IdValidationPipe) movieId: string,
-    @User() user: UserModel
+    @Body("movieId") movieId: string,
+    @Body("refreshToken") refreshToken: string
   ) {
-    return this.userService.toggleFavourite(movieId, user)
+    return this.userService.toggleFavourite(movieId, refreshToken)
   }
 }

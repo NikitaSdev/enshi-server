@@ -4,7 +4,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UploadedFiles,
   UseInterceptors
 } from "@nestjs/common"
 import { FileService } from "./file.service"

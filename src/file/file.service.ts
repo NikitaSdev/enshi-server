@@ -15,6 +15,7 @@ export class FileService {
     const res: FileResponse[] = await Promise.all(
       files.map(async (file) => {
         await writeFile(`${uploadFolder}/${file.originalname}`, file.buffer)
+        console.log(`/uploads/${folder}/${file.originalname}`)
         return {
           url: `/uploads/${folder}/${file.originalname}`,
           name: file.originalname

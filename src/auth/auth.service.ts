@@ -6,7 +6,7 @@ import {
 import { InjectModel } from "nestjs-typegoose"
 import { ModelType } from "@typegoose/typegoose/lib/types"
 import { UserModel } from "src/user/user.model"
-import { AuthDto, LoginDto } from "./dto/auth.dto"
+import { AuthDto, LoginDto, UpdateDto } from "./dto/auth.dto"
 import { compare, genSalt, hash } from "bcryptjs"
 import { JwtService } from "@nestjs/jwt"
 import { RefreshTokenDto } from "./dto/refreshToken.dto"
@@ -27,6 +27,17 @@ export class AuthService {
       ...tokens
     }
   }
+  async updateUser(dto: UpdateDto) {
+    if (!dto.refreshToken) {
+      throw new UnauthorizedException("Sign in")
+    }
+    const result = await this.jwtService.verifyAsync(dto.refreshToken)
+    if (!result) {
+      throw new UnauthorizedException("Invalid token or expired")
+    }
+    const user = await this.UserModel.findById(result._id)
+    console.log(user)
+  }
   async register(dto: AuthDto) {
     const mailService = new MailService()
     const emailMatch = await this.UserModel.findOne({
@@ -45,6 +56,7 @@ export class AuthService {
     const newUser = new this.UserModel({
       email: dto.email,
       login: dto.login,
+      pseudonim: dto.pseudonim,
       activationLink: uuidv4(),
       password: await hash(dto.password, salt)
     })
@@ -95,15 +107,20 @@ export class AuthService {
     return { refreshToken, accessToken }
   }
   returnUserFields(user: UserModel) {
+    console.log(user)
     return {
       _id: user._id,
+      pseudonim: user.pseudonim,
+      avatarUrl: user.avatarURL,
+      wrapperURL: user.wrapperURL,
       login: user.login,
-      email: user.email
+      email: user.email,
+      count: user.count
     }
   }
   async getNewTokens({ refreshToken }: RefreshTokenDto) {
     if (!refreshToken) {
-      throw new UnauthorizedException("Sign in, bastard")
+      throw new UnauthorizedException("Sign in")
     }
     const result = await this.jwtService.verifyAsync(refreshToken)
     if (!result) {

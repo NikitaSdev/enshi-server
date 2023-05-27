@@ -3,7 +3,9 @@ import { UserService } from "./user.service"
 import { UserController } from "./user.controller"
 import { TypegooseModule } from "nestjs-typegoose"
 import { UserModel } from "./user.model"
-import { ConfigModule } from "@nestjs/config"
+import { ConfigModule, ConfigService } from "@nestjs/config"
+import { JwtModule } from "@nestjs/jwt"
+import { getJWTConfig } from "../config/jwt.config"
 
 @Module({
   imports: [
@@ -15,6 +17,11 @@ import { ConfigModule } from "@nestjs/config"
         }
       }
     ]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getJWTConfig
+    }),
     ConfigModule
   ],
   providers: [UserService],
