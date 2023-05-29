@@ -12,6 +12,7 @@ import { JwtService } from "@nestjs/jwt"
 import { RefreshTokenDto } from "./dto/refreshToken.dto"
 import { MailService } from "../service/mail.service"
 import { v4 as uuidv4 } from "uuid"
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -21,6 +22,8 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.validateUser(dto)
+    if (user.activated === false)
+      throw new UnauthorizedException("Подтвердите почту")
     const tokens = await this.issueTokenPair(String(user._id))
     return {
       user: this.returnUserFields(user),
@@ -47,10 +50,10 @@ export class AuthService {
       login: dto.login
     })
     if (loginMatch) {
-      throw new BadRequestException("This login is already taken")
+      throw new BadRequestException("Логин занят")
     }
     if (emailMatch) {
-      throw new BadRequestException("This email is already taken")
+      throw new BadRequestException("Email занят")
     }
     const salt = await genSalt()
     const newUser = new this.UserModel({
@@ -64,7 +67,7 @@ export class AuthService {
     const tokens = await this.issueTokenPair(String(newUser._id))
     await mailService.sendActivationMail(
       dto.email,
-      `${process.env.API_URL}/api/auth/activate/${newUser.activationLink}`
+      `${process.env.DOMAIN}auth/activate/${newUser.activationLink}`
     )
 
     const user = await newUser.save()
@@ -73,6 +76,32 @@ export class AuthService {
       ...tokens
     }
   }
+  async changePassword(emailOrLogin: string) {
+    const user = await this.UserModel.findOne({
+      $or: [{ email: emailOrLogin }, { login: emailOrLogin }]
+    })
+    console.log(user)
+    if (!user) {
+      throw new UnauthorizedException("Пользователь не найден")
+    }
+    const mailService = new MailService()
+    const passwordLink = uuidv4()
+    user.passwordLink = passwordLink
+    await mailService.changePassword(user.email, passwordLink)
+    user.save()
+    return user
+  }
+  async getPassword(passwordLink: string) {
+    const user = await this.UserModel.findOne({ passwordLink })
+    if (!user) {
+      throw new Error("Неккоректная ссылка")
+    }
+    const newPassword = uuidv4().slice(0, 7)
+    const salt = await genSalt()
+    user.password = await hash(newPassword, salt)
+    await user.save()
+    return newPassword
+  }
   async activate(activationLink: string) {
     const user = await this.UserModel.findOne({ activationLink })
     if (!user) {
@@ -80,6 +109,7 @@ export class AuthService {
     }
     user.activated = true
     await user.save()
+    return
   }
 
   async validateUser(dto: LoginDto): Promise<UserModel> {
@@ -87,11 +117,11 @@ export class AuthService {
       $or: [{ email: dto.emailOrLogin }, { login: dto.emailOrLogin }]
     })
     if (!User) {
-      throw new UnauthorizedException("User not found")
+      throw new UnauthorizedException("Пользователь не найден")
     }
     const isValidPassword = await compare(dto.password, User.password)
     if (!isValidPassword) {
-      throw new UnauthorizedException("Wrong password")
+      throw new UnauthorizedException("Неверный пароль")
     }
     return User
   }
@@ -114,6 +144,7 @@ export class AuthService {
       avatarUrl: user.avatarURL,
       wrapperURL: user.wrapperURL,
       login: user.login,
+      favourites: user.favourites,
       email: user.email,
       count: user.count
     }

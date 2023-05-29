@@ -19,6 +19,8 @@ export class UserModel extends TimeStamps {
   activated: boolean
   @prop()
   activationLink: string
+  @prop()
+  passwordLink: string
   @prop({ default: [] })
   count: Array<string>
   @prop({ default: [] })

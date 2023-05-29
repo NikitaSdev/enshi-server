@@ -40,12 +40,17 @@ export class UserService {
       user.avatarURL = dto.data.avatarURL
     if (dto.data.wrapperURL && dto.data.wrapperURL !== "")
       user.wrapperURL = dto.data.wrapperURL
-    if (dto.data.password && dto.data.password !== "") {
+    if (
+      dto.data.password &&
+      dto.data.password !== "" &&
+      dto.data.newPassword &&
+      dto.data.newPassword !== ""
+    ) {
       const isValidPassword = await compare(dto.data.password, user.password)
       if (isValidPassword) {
         user.password = dto.data.newPassword
       } else {
-        throw new UnauthorizedException("Пароли не совпадают")
+        return "Пароли не совпадают"
       }
     }
     await user.save()

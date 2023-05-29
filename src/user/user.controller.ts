@@ -12,7 +12,6 @@ import { UserService } from "./user.service"
 import { User } from "./decorators/user.decorator"
 
 import { IdValidationPipe } from "../pipes/id.validation.pipe"
-import { Types } from "mongoose"
 import { UpdateDto } from "../auth/dto/auth.dto"
 
 @Controller("users")
