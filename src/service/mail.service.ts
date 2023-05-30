@@ -22,12 +22,14 @@ export class MailService {
         to,
         subject: "Подтвердите аккаунт на enshi.ru",
         html: `
-           <section style="background: #E8EAF0; display: flex; justify-content: center; align-items: center; width:100%;">
-        <div style="color:black; max-width:522px; background: white; border-radius: 20px; padding:63px 46px;">
+           <section style="background: #E8EAF0; display: flex; justify-content: center; align-items: center; ">
+        <div style="color:black;  background: white; border-radius: 20px; padding:63px 46px;">
          <h1 >Ваш аккаунт <span style="color:#8C53FD;">почти</span> готов</h1>
          <p>Теперь у вас есть Личный кабинет на<br/> нашем сайте. Чтобы активировать его,<br/> нажмите на кнопку ниже.</p>
          <button style=" border:none; width:100%; height:78px; display: flex; justify-content: center; align-items: center; background:#8C53FD; color: white; border-radius: 20px; ">
-         <a style="font-size: 1.1rem; font-weight: 600; text-align: center; margin: auto; text-decoration: none; color:white;" href="${link}">Подтвердить</a>
+         <a style="font-size: 1.1rem; font-weight: 600; text-align: center; margin: auto; text-decoration: none; color:white;" href="${
+           process.env.DOMAIN + "auth/activate/" + link
+         }">Подтвердить</a>
         </button>
         <p style="margin-top:25px; font-size: 1rem; font-weight: 500;">Если нужна помощь, напишите нам во <a href="https://vk.com/enshii" target="_blank" rel="noreferrer">Вконтакте</a></p>
         <p style="margin-top:25px; font-size: 1rem; font-weight: 500;">На связи 24/7<br/>

@@ -56,21 +56,17 @@ export class AuthService {
       throw new BadRequestException("Email занят")
     }
     const salt = await genSalt()
+    const activationLink = uuidv4()
     const newUser = new this.UserModel({
       email: dto.email,
       login: dto.login,
       pseudonim: dto.pseudonim,
-      activationLink: uuidv4(),
       password: await hash(dto.password, salt)
     })
-
-    const tokens = await this.issueTokenPair(String(newUser._id))
-    await mailService.sendActivationMail(
-      dto.email,
-      `${process.env.DOMAIN}auth/activate/${newUser.activationLink}`
-    )
-
+    newUser.activationLink = activationLink
     const user = await newUser.save()
+    const tokens = await this.issueTokenPair(String(newUser._id))
+    await mailService.sendActivationMail(dto.email, activationLink)
     return {
       user: this.returnUserFields(user),
       ...tokens

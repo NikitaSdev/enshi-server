@@ -23,7 +23,7 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Get("activate/:link")
-  @Redirect(`${process.env.CLIENT}activate`)
+  @Redirect(`https://enshi.ru/activate`)
   async activate(@Param("link") link: string) {
     await this.AuthService.activate(link)
   }
