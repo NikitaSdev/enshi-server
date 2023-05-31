@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Put } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  Query
+} from "@nestjs/common"
 import { TopService } from "./top.service"
 import { TopDto } from "./dto/top.dto"
 
@@ -18,7 +26,7 @@ export class TopController {
   }
   @Get("")
   @HttpCode(200)
-  async getAll() {
-    return this.topService.getAll()
+  async getAll(@Query("limit") limit?: number, @Query("page") page?: number) {
+    return this.topService.getAll(limit, page)
   }
 }

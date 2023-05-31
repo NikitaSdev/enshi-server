@@ -41,7 +41,9 @@ export class TopService {
     await top.save()
     return top
   }
-  async getAll() {
-    return this.TopModel.findOne()
+  async getAll(limit?: number, page?: number) {
+    const data = await this.TopModel.findOne()
+    console.log(data.list.slice(page, limit))
+    return data.list.slice(page, limit)
   }
 }
