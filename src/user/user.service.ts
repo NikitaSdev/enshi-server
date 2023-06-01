@@ -48,7 +48,8 @@ export class UserService {
     ) {
       const isValidPassword = await compare(dto.data.password, user.password)
       if (isValidPassword) {
-        user.password = dto.data.newPassword
+        const salt = await genSalt()
+        user.password = await hash(dto.data.newPassword, salt)
       } else {
         return "Пароли не совпадают"
       }

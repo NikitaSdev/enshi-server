@@ -27,9 +27,6 @@ export class AuthController {
   async activate(@Param("link") link: string) {
     await this.AuthService.activate(link)
   }
-  redirect(@Res() res) {
-    return res.redirect("/books/greet")
-  }
 
   @Get("getNewPassword/:link")
   @UsePipes(new ValidationPipe())
